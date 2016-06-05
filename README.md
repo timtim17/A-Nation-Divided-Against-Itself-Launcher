@@ -1,5 +1,5 @@
 # A-Nation-Divided-Against-Itself-Launcher
-The Minecraft launcher made in Python.
+The customizable Minecraft launcher made in Python.
 
 ##Features
 • Easier for beginners to modify or customize  
