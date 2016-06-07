@@ -1,4 +1,5 @@
-version="1.0.0"
+# Last update: 6/7/2016
+version="1.0.1"
 print "Starting Minecraft Launcher v%s" % (version)
 from Tkinter import *
 import ttk
@@ -35,7 +36,10 @@ import json
 x=0
 root=Tk()
 root.title("Minecraft Launcher (v%s)" % (version))
-root.iconbitmap("C:\Users\Sasha\Downloads\custom_icon.ico")
+try:
+    root.iconbitmap("C:\Users\<redacted>\Downloads\custom_icon.ico")
+except TclError as e:
+    print "[%s ERR]: An exception has occured:\n%s" % (time.strftime("%H:%M:%S"), e)
 Frame=ttk.LabelFrame(root, text="Minecraft Launcher")
 Frame.pack()
 
@@ -62,7 +66,7 @@ def internet_on():
     except urllib2.URLError as err: pass
     return False
 
-
+FailedFiles=0
 
 
 class Profile:
@@ -132,6 +136,8 @@ class Profile:
                                 os.remove(libpath)
                             except:
                                 pass
+                        except:
+                            "[%s WARN]: Jar file or zip file not found. This may cause errors." % (time.strftime("%H:%M:%S"))
 
         # We must also get the assets index.
         assetsName = self.versionInfo.get("assets", "legacy")
@@ -153,19 +159,25 @@ class Profile:
                 "http://resources.download.minecraft.net/%s/%s" % (pref, hash)
             ))
     def downloadFile(self, filename, url):
+        global FailedFiles
         print "[%s INFO]: Downloading: %s" % (time.strftime("%H:%M:%S"), filename)
         dirname = filename.rsplit("/", 1)[0]
         makeDir(dirname)
-        inf = urllib.urlopen(url)
-        outf = open(filename, "wb")
-        while 1:
-            b = inf.read(1)
-            if len(b) == 0:
-                break
-            else:
-                outf.write(b)
-        inf.close()
-        outf.close()
+        try:
+            inf = urllib.urlopen(url)
+            outf = open(filename, "wb")
+            while 1:
+                b = inf.read(1)
+                if len(b) == 0:
+                    break
+                else:
+                    outf.write(b)
+            inf.close()
+            outf.close()
+        except IOError as e:
+            print "[%s ERR]: File '%s' could not be downloaded.\n[%s ERR]: %s" % (time.strftime("%H:%M:%S"),filename,time.strftime("%H:%M:%S"),e)
+            FailedFiles+=1
+            sys.exit(1)
         print "[%s INFO]: Finished downloading: %s" % (time.strftime("%H:%M:%S"), filename)
         sys.exit(0)
 
