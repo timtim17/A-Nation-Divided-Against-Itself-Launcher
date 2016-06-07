@@ -139,7 +139,7 @@ class Profile:
         assetsIndexLink = "https://s3.amazonaws.com/Minecraft.Download/indexes/%s.json" % assetsName
         self.cdownload3=threading.Thread(target=self.downloadFile, args=(assetsIndexFile, assetsIndexLink))
         self.cdownload3.start()
-        #self.cdownload3.join()
+        self.cdownload3.join()
         assetsIndexFile=str(assetsIndexFile)
         f = open(assetsIndexFile, "rb")
         assetsData = json.loads(f.read())
@@ -156,7 +156,6 @@ class Profile:
         print "[%s INFO]: Downloading: %s" % (time.strftime("%H:%M:%S"), filename)
         dirname = filename.rsplit("/", 1)[0]
         makeDir(dirname)
-        print os.getcwd()
         inf = urllib.urlopen(url)
         outf = open(filename, "wb")
         while 1:
@@ -167,14 +166,25 @@ class Profile:
                 outf.write(b)
         inf.close()
         outf.close()
+        print "[%s INFO]: Finished downloading: %s" % (time.strftime("%H:%M:%S"), filename)
+        sys.exit(0)
 
     def downloadMissingFiles(self):
+        print "[%s INFO]: Started downloading missing fies." % (time.strftime("%H:%M:%S"))
+        running_downloads = []
         for filename, url in self.fileIndex:
             if not os.path.exists(filename):
-                self.downloadmfiles=threading.Thread(target=self.downloadFile, args=(filename, url))
-                self.downloadmfiles.start()
+                if len(running_downloads) > 20:
+                    for f in running_downloads:
+                        f.join()
+                    running_downloads=[]
+                downloadmfiles=threading.Thread(target=self.downloadFile, args=(filename, url))
+                downloadmfiles.start()
+                running_downloads.append(downloadmfiles)
                 root.after(500)
                 #self.downloadmfiles.join()
+        for f in running_downloads:
+            f.join()
 
     def launchcmd(self, username = "MinecraftPlayer"):
         libs = [self.jar]
