@@ -1,4 +1,4 @@
-# Last update: 6/7/2016
+# Last update: 6/8/2016
 version="1.0.1"
 print "Starting Minecraft Launcher v%s" % (version)
 from Tkinter import *
@@ -67,7 +67,7 @@ def internet_on():
     return False
 
 FailedFiles=0
-
+DownloadedFiles=0
 
 class Profile:
     def __init__(self, version):
@@ -158,43 +158,59 @@ class Profile:
                 "mcdata/assets/objects/%s/%s" % (pref, hash),
                 "http://resources.download.minecraft.net/%s/%s" % (pref, hash)
             ))
+    # def downloadFile(self, filename, url):
+    #     global FailedFiles
+    #     global DownloadedFiles
+    #     print "[%s INFO]: Downloading: %s, currently only %s failed." % (time.strftime("%H:%M:%S"), filename, FailedFiles)
+    #     dirname = filename.rsplit("/", 1)[0]
+    #     makeDir(dirname)
+    #     try:
+    #         inf = urllib.urlopen(url)
+    #         outf = open(filename, "wb")
+    #         while 1:
+    #             b = inf.read(1)
+    #             if len(b) == 0:
+    #                 break
+    #             else:
+    #                 outf.write(b)
+    #         inf.close()
+    #         outf.close()
+    #         DownloadedFiles+=1
+    #     except IOError as e:
+    #         print "[%s ERR]: File '%s' could not be downloaded." % (time.strftime("%H:%M:%S"),filename)
+    #         FailedFiles+=1
+    #         sys.exit(1)
+
     def downloadFile(self, filename, url):
         global FailedFiles
-        print "[%s INFO]: Downloading: %s" % (time.strftime("%H:%M:%S"), filename)
+        global DownloadedFiles
+        print "[%s INFO]: Downloading: %s, currently only %s failed." % (
+        time.strftime("%H:%M:%S"), filename, FailedFiles)
         dirname = filename.rsplit("/", 1)[0]
         makeDir(dirname)
         try:
-            inf = urllib.urlopen(url)
-            outf = open(filename, "wb")
-            while 1:
-                b = inf.read(1)
-                if len(b) == 0:
-                    break
-                else:
-                    outf.write(b)
-            inf.close()
-            outf.close()
+            urllib.urlretrieve(url, filename)
+            DownloadedFiles += 1
         except IOError as e:
-            print "[%s ERR]: File '%s' could not be downloaded.\n[%s ERR]: %s" % (time.strftime("%H:%M:%S"),filename,time.strftime("%H:%M:%S"),e)
-            FailedFiles+=1
+            print "[%s ERR]: File '%s' could not be downloaded." % (time.strftime("%H:%M:%S"), filename)
+            FailedFiles += 1
             sys.exit(1)
-        print "[%s INFO]: Finished downloading: %s" % (time.strftime("%H:%M:%S"), filename)
+        print "[%s INFO]: Finished downloading: %s, currently only %s succeeded." % (time.strftime("%H:%M:%S"), filename, DownloadedFiles)
         sys.exit(0)
 
     def downloadMissingFiles(self):
-        print "[%s INFO]: Started downloading missing fies." % (time.strftime("%H:%M:%S"))
+        print "[%s INFO]: Started downloading missing files." % (time.strftime("%H:%M:%S"))
         running_downloads = []
         for filename, url in self.fileIndex:
             if not os.path.exists(filename):
-                if len(running_downloads) > 20:
+                if len(running_downloads) > 49:
                     for f in running_downloads:
                         f.join()
                     running_downloads=[]
                 downloadmfiles=threading.Thread(target=self.downloadFile, args=(filename, url))
                 downloadmfiles.start()
                 running_downloads.append(downloadmfiles)
-                root.after(500)
-                #self.downloadmfiles.join()
+                # self.downloadmfiles.join()
         for f in running_downloads:
             f.join()
 
@@ -238,12 +254,23 @@ class Profile:
 def launchMC():
     p=Profile("1.7.10")
     p.downloadMissingFiles()
-    shutil.copyfile("usernamecache.json", "mcdata\\usernamecache.json")
+    if os.path.isfile("usernamecache.json"):
+        shutil.copyfile("usernamecache.json", "mcdata\\usernamecache.json")
+    else:
+        print "[%s ERR]: User not authenticated/usernamecache.json not found." % (time.strftime("%H:%M:%S"))
+        win=open("usernamecache.json", "w")
+        win.write("Player\nnull\nnull")
     os.chdir("mcdata")
     #command="cd mcdata && %s" % (p.launchcmd(username))
     creds.withdraw()
-    print "[WARN]: Attempting to launch, likely without the right files."
-    subprocess.Popen(p.launchcmd(), shell=True)
+    if FailedFiles > 0:
+        print "[WARN]: Attempting to launch, likely without the right files."
+        try:
+            subprocess.Popen(p.launchcmd(), shell=True)
+        except:
+            tkMessageBox.showerror("Error!", "An error has cccured, and Minecraft cannot be launched.\n%s files could not be downloaded. (Error #E12)" % FailedFiles)
+        tkMessageBox.showerror("Error!",
+                               "An error has cccured, and Minecraft cannot be launched.\n%s files could not be downloaded. (Error #D34)" % FailedFiles)
 creds=Toplevel()
 creds.minsize(width=400, height=100)
 UsrFrame=ttk.LabelFrame(creds, text="Username")
