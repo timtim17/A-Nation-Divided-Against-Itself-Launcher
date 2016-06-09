@@ -1,6 +1,6 @@
 language: python
+install: "pip install requests"
 python:
-  - "2.6"
   - "2.7"
   - "3.2"
   - "3.3"
