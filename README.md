@@ -1,4 +1,4 @@
-# A-Nation-Divided-Against-Itself-Launcher
+# A-Nation-Divided-Against-Itself-Launcher   [![Build Status](https://travis-ci.org/Unknown025/A-Nation-Divided-Against-Itself-Launcher.svg?branch=master)](https://travis-ci.org/Unknown025/A-Nation-Divided-Against-Itself-Launcher)
 The customizable Minecraft launcher made in Python.
 
 ##Features
