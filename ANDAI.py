@@ -49,9 +49,8 @@ import json
 x=0
 try:
     root=Tk()
-except _tkinter.TclError as e:
-    print e
-    logging.critical("An exception has occured and Tkinter cannot be initiated.")
+except:
+    logging.critical("A critical error has occured and Tkinter cannot be initiated.")
     sys.exit(0)
 root.title("Minecraft Launcher (v%s)" % (version))
 try:
