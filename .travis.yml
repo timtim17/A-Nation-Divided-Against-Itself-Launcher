@@ -13,4 +13,4 @@ env:
   - TRAVIS=true
 # command to install dependencies
 # command to run tests
-script: python NADAI.py
+script: python ANDAI.py
