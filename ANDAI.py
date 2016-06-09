@@ -50,8 +50,9 @@ root.title("Minecraft Launcher (v%s)" % (version))
 try:
     root.iconbitmap("custom_icon.ico")
 except TclError as e:
-    print "[%s ERR]: An exception has occured:\n%s" % (time.strftime("%H:%M:%S"), e)
-    logging.warning("Image not found.")
+    urllib.urlretrieve("https://raw.githubusercontent.com/Unknown025/A-Nation-Divided-Against-Itself-Launcher/master/custom_icon.ico", "custom_icon.ico")
+    logging.info("Downloaded custom_icon.ico from https://raw.githubusercontent.com/Unknown025/A-Nation-Divided-Against-Itself-Launcher/master/custom_icon.ico")
+    root.iconbitmap("custom_icon.ico")
 Frame=ttk.LabelFrame(root, text="Minecraft Launcher")
 Frame.pack()
 
