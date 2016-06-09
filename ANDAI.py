@@ -1,6 +1,6 @@
 # Last update: 6/8/2016
-version="1.0.1"
-print "Starting Minecraft Launcher v%s" % (version)
+version="1.0.2"
+print "Starting Minecraft Launcher v%s Alpha" % (version)
 from Tkinter import *
 import ttk
 import tkMessageBox
@@ -12,18 +12,29 @@ import ntpath
 import os
 import sys
 import random
-from multiprocessing import Process
+import logging
 import threading
-print "[%s INFO]: Finished loading." % (time.strftime("%H:%M:%S"))
+import getpass
+import zipfile
 try:
     import requests
 except ImportError as e:
     print "[%s ERR]: The module 'requests' could not be imported. The process cannot continue." % (time.strftime("%H:%M:%S"))
     sys.exit(1)
 from zipfile import ZipFile, BadZipfile
-if os.path.exists(".minecraft")==False:
+computer_name = os.environ['COMPUTERNAME']
+user=getpass.getuser()
+LOG_FILENAME="launcher.log"
+FORMAT = '[%(asctime)s %(levelname)s]: %(message)s'
+logging.basicConfig(filename=LOG_FILENAME,format=FORMAT, level=0)
+print "[%s INFO]: Finished loading." % (time.strftime("%H:%M:%S"))
+logging.info("----------NEW LOG--------")
+logging.info("Computer name is: %s" % computer_name)
+logging.info("Username is: %s" % user)
+if not os.path.exists(".minecraft"):
     try:
         os.mkdir(".minecraft")
+        logging.info("Created .minecraft")
     except WindowsError as e:
         print "[%s INFO]: .minecraft already exists." % (time.strftime("%H:%M:%S"))
 else:
@@ -37,9 +48,10 @@ x=0
 root=Tk()
 root.title("Minecraft Launcher (v%s)" % (version))
 try:
-    root.iconbitmap("C:\Users\<redacted>\Downloads\custom_icon.ico")
+    root.iconbitmap("custom_icon.ico")
 except TclError as e:
     print "[%s ERR]: An exception has occured:\n%s" % (time.strftime("%H:%M:%S"), e)
+    logging.warning("Image not found.")
 Frame=ttk.LabelFrame(root, text="Minecraft Launcher")
 Frame.pack()
 
@@ -53,6 +65,7 @@ def makeDir(dirname):
 currentOS = None
 if sys.platform.startswith("win"):
     currentOS = "windows"
+    logging.info("Current OS: Windows")
 else:
     currentOS = "linux"
 
@@ -89,6 +102,7 @@ class Profile:
         f = None
         try:
             f = open("mcdata/versions/%s/%s.json" % (self.version, self.version), "rb")
+            logging.info("Downloaded version info.")
         except IOError:
             makeDir("mcdata/versions/%s" % self.version)
             self.cdownload1=threading.Thread(target=self.downloadFile, args=("mcdata/versions/%s/%s.json" % (self.version, self.version),
@@ -130,13 +144,15 @@ class Profile:
                                 if not (name.startswith("META-INF") or name.startswith(".")):
                                     zipfile.extract(name, "mcdata/natives")
                             zipfile.close()
-                        except BadZipfile:
+                        except BadZipfile as e:
+                            logging.exception("Zip/Jar file could not be extracted: %s. Error goes as follows: %s" % name, e)
                             print "[%s WARN]: A faulty zip or jar file was found. This may cause problems!" % (time.strftime("%H:%M:%S"))
                             try:
                                 os.remove(libpath)
                             except:
                                 pass
                         except:
+                            logging.critical("A zip or jar file could not be found. File: %s" % name)
                             "[%s WARN]: Jar file or zip file not found. This may cause errors." % (time.strftime("%H:%M:%S"))
 
         # We must also get the assets index.
@@ -184,22 +200,32 @@ class Profile:
     def downloadFile(self, filename, url):
         global FailedFiles
         global DownloadedFiles
-        print "[%s INFO]: Downloading: %s, currently only %s failed." % (time.strftime("%H:%M:%S"), filename, FailedFiles)
         dirname = filename.rsplit("/", 1)[0]
         makeDir(dirname)
         filename2=filename+".tmp"
-        try:
-            urllib.urlretrieve(url, filename2)
-            os.rename(filename2, filename)
-            DownloadedFiles += 1
-        except IOError as e:
-            print "[%s ERR]: File '%s' could not be downloaded." % (time.strftime("%H:%M:%S"), filename)
-            FailedFiles += 1
-            sys.exit(1)
-        except:
-            print "[%s ERROR]: An exception has occured and the process cannot continue." % (time.strftime("%H:%M:%S"))
-            FailedFiles += 1
-        print "[%s INFO]: Finished downloading: %s, currently only %s succeeded." % (time.strftime("%H:%M:%S"), filename, DownloadedFiles)
+        if not os.path.isfile(filename):
+            try:
+                print "[%s INFO]: Downloading: %s, currently only %s failed." % (
+                time.strftime("%H:%M:%S"), filename, FailedFiles)
+                logging.info("Downloading %s" % filename)
+                urllib.urlretrieve(url, filename2)
+                os.rename(filename2, filename)
+                DownloadedFiles += 1
+                print "[%s INFO]: Finished downloading: %s, currently only %s succeeded." % (
+                time.strftime("%H:%M:%S"), filename, DownloadedFiles)
+                logging.info("Finished downloading: %s" % filename)
+            except IOError as e:
+                print "[%s ERR]: File '%s' could not be downloaded." % (time.strftime("%H:%M:%S"), filename)
+                FailedFiles += 1
+                logging.error("File '%s' was not downloaded. The error goes as follows: %s" % filename,e)
+                sys.exit(1)
+            except WindowsError as e:
+                time.sleep(10)
+                os.rename(filename2, filename)
+
+        # except:
+        #     print "[%s ERROR]: An exception has occured and the process cannot continue." % (time.strftime("%H:%M:%S"))
+        #     FailedFiles += 1
         sys.exit(0)
 
     def downloadMissingFiles(self):
@@ -219,7 +245,26 @@ class Profile:
             f.join()
     def downloadForge(self):
         print "[%s INFO]: Started downloading mod files." % (time.strftime("%H:%M:%S"))
+        logging.info("Started downloading mod files.")
         urllib.urlretrieve("http://anationdividedagainstitself-modpack.rhcloud.com/a-nation-divided-against-itself.json", "a-nation-divided-against-itself.json")
+        urllib.urlretrieve("http://files.minecraftforge.net/maven/net/minecraftforge/forge/1.7.10-10.13.4.1614-1.7.10/forge-1.7.10-10.13.4.1614-1.7.10-universal.jar", "forge-universal.jar")
+        try:
+            zipfile = ZipFile("forge-universal.jar", "r")
+            for name in zipfile.namelist():
+                if not (name.startswith("META-INF") or name.startswith(".")):
+                    zipfile.extract(name, "forgeTemp")
+            zipfile.close()
+            print os.getcwd()
+            zipfile2 = ZipFile("mcdata/versions/1.7.10/1.7.10.jar", "a")
+            os.chdir("forgeTemp")
+            for i in os.listdir("."):
+                path="forgeTemp\%s" % i
+                zipfile2.write(i)
+                logging.info("Added file %s to 1.7.10.jar", i)
+            os.chdir("..")
+        except BadZipfile as e:
+            logging.exception("[Forge]: Zip/Jar file could not be extracted: %s. Error goes as follows: %s", name,e)
+            print "[%s WARN]: A faulty zip or jar file was found. This may cause problems!" % (time.strftime("%H:%M:%S"))
         win=open("a-nation-divided-against-itself.json", "r")
         data=win.read()
         dn=json.loads(data)
@@ -236,8 +281,8 @@ class Profile:
                     for f in running_downloads:
                         f.join()
             x+=1
-            print x
-        print "[INFO]: Ended downloading files. " + str(x)
+        print "[INFO]: Ended downloading files. " + str(DownloadedFiles)
+        logging.info("Ended download process. Downloaded: %s, Failed: %s",  str(DownloadedFiles),str(FailedFiles))
     def launchcmd(self, username = "MinecraftPlayer"):
         libs = [self.jar]
         libs.extend(self.libs)
@@ -276,9 +321,10 @@ class Profile:
 
 
 def launchMC():
+    tkMessageBox.showinfo("Warning!", "This launcher is not fully functional yet. For safety purposes, account validation has been disabled. Forge functionality is not complete yet, so it is also disabled. Also, the launcher will appear to freeze when downloading files. Be patient.")
     p=Profile("1.7.10")
     p.downloadMissingFiles()
-    p.downloadForge()
+    # p.downloadForge()
     if os.path.isfile("usernamecache.json"):
         shutil.copyfile("usernamecache.json", "mcdata\\usernamecache.json")
     else:
@@ -298,7 +344,7 @@ def launchMC():
                                "An error has cccured, and Minecraft cannot be launched.\n%s files could not be downloaded. (Error #D34)" % FailedFiles)
     else:
         pass
-        #subprocess.Popen(p.launchcmd(), shell=True)
+        subprocess.Popen(p.launchcmd(), shell=False)
 creds=Toplevel()
 creds.minsize(width=400, height=100)
 UsrFrame=ttk.LabelFrame(creds, text="Username")
