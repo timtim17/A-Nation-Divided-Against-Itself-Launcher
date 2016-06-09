@@ -21,7 +21,7 @@ except ImportError as e:
     print "[%s ERR]: The module 'requests' could not be imported. The process cannot continue." % (time.strftime("%H:%M:%S"))
     sys.exit(1)
 from zipfile import ZipFile, BadZipfile
-if os.path.exists(".minecraft")==False or os.path.exists("launcher")==False:
+if os.path.exists(".minecraft")==False:
     try:
         os.mkdir(".minecraft")
     except WindowsError as e:
@@ -184,17 +184,21 @@ class Profile:
     def downloadFile(self, filename, url):
         global FailedFiles
         global DownloadedFiles
-        print "[%s INFO]: Downloading: %s, currently only %s failed." % (
-        time.strftime("%H:%M:%S"), filename, FailedFiles)
+        print "[%s INFO]: Downloading: %s, currently only %s failed." % (time.strftime("%H:%M:%S"), filename, FailedFiles)
         dirname = filename.rsplit("/", 1)[0]
         makeDir(dirname)
+        filename2=filename+".tmp"
         try:
-            urllib.urlretrieve(url, filename)
+            urllib.urlretrieve(url, filename2)
+            os.rename(filename2, filename)
             DownloadedFiles += 1
         except IOError as e:
             print "[%s ERR]: File '%s' could not be downloaded." % (time.strftime("%H:%M:%S"), filename)
             FailedFiles += 1
             sys.exit(1)
+        except:
+            print "[%s ERROR]: An exception has occured and the process cannot continue." % (time.strftime("%H:%M:%S"))
+            FailedFiles += 1
         print "[%s INFO]: Finished downloading: %s, currently only %s succeeded." % (time.strftime("%H:%M:%S"), filename, DownloadedFiles)
         sys.exit(0)
 
@@ -213,7 +217,27 @@ class Profile:
                 # self.downloadmfiles.join()
         for f in running_downloads:
             f.join()
-
+    def downloadForge(self):
+        print "[%s INFO]: Started downloading mod files." % (time.strftime("%H:%M:%S"))
+        urllib.urlretrieve("http://anationdividedagainstitself-modpack.rhcloud.com/a-nation-divided-against-itself.json", "a-nation-divided-against-itself.json")
+        win=open("a-nation-divided-against-itself.json", "r")
+        data=win.read()
+        dn=json.loads(data)
+        x=0
+        running_downloads=[]
+        for i in dn["tasks"]:
+            if not os.path.isfile(dn["tasks"][x]["to"]):
+                filename = "mcdata/" + dn["tasks"][x]["to"]
+                url = "http://anationdividedagainstitself-modpack.rhcloud.com/objects/" + dn["tasks"][x]['location']
+                downloadForge=threading.Thread(target=self.downloadFile, args=(filename, url))
+                downloadForge.start()
+                running_downloads.append(downloadForge)
+                if len(running_downloads) > 10:
+                    for f in running_downloads:
+                        f.join()
+            x+=1
+            print x
+        print "[INFO]: Ended downloading files. " + str(x)
     def launchcmd(self, username = "MinecraftPlayer"):
         libs = [self.jar]
         libs.extend(self.libs)
@@ -254,6 +278,7 @@ class Profile:
 def launchMC():
     p=Profile("1.7.10")
     p.downloadMissingFiles()
+    p.downloadForge()
     if os.path.isfile("usernamecache.json"):
         shutil.copyfile("usernamecache.json", "mcdata\\usernamecache.json")
     else:
@@ -271,6 +296,9 @@ def launchMC():
             tkMessageBox.showerror("Error!", "An error has cccured, and Minecraft cannot be launched.\n%s files could not be downloaded. (Error #E12)" % FailedFiles)
         tkMessageBox.showerror("Error!",
                                "An error has cccured, and Minecraft cannot be launched.\n%s files could not be downloaded. (Error #D34)" % FailedFiles)
+    else:
+        pass
+        #subprocess.Popen(p.launchcmd(), shell=True)
 creds=Toplevel()
 creds.minsize(width=400, height=100)
 UsrFrame=ttk.LabelFrame(creds, text="Username")
