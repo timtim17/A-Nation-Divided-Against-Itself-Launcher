@@ -16,20 +16,22 @@ import logging
 import threading
 import getpass
 import zipfile
+import socket
 try:
     import requests
 except ImportError as e:
     print "[%s ERR]: The module 'requests' could not be imported. The process cannot continue." % (time.strftime("%H:%M:%S"))
     sys.exit(1)
 from zipfile import ZipFile, BadZipfile
-computer_name = os.environ['COMPUTERNAME']
+try:
+    computer_name = os.environ['COMPUTERNAME']
+except KeyError:
+    computer_name = socket.gethostname()
 user=getpass.getuser()
 LOG_FILENAME="launcher.log"
 FORMAT = '[%(asctime)s %(levelname)s]: %(message)s'
 logging.basicConfig(filename=LOG_FILENAME,format=FORMAT, level=0)
 print "[%s INFO]: Finished loading." % (time.strftime("%H:%M:%S"))
-logging.info("----------NEW LOG--------")
-logging.info("Computer name is: %s" % computer_name)
 logging.info("Username is: %s" % user)
 if not os.path.exists(".minecraft"):
     try:
@@ -387,7 +389,6 @@ def showlogin():
 chk=ttk.Button(creds, text="Login", command=validate)
 chk.pack()
 def serverping():
-    import socket
     import struct
 
     def unpack_varint(s):
