@@ -8,6 +8,9 @@ python:
   # does not have headers provided, please ask https://launchpad.net/~pypy/+archive/ppa
   # maintainers to fix their pypy-dev package.
   - "pypy"
+env:
+  - CI=true
+  - TRAVIS=true
 # command to install dependencies
 # command to run tests
 script: python NADAI.py
