@@ -47,7 +47,12 @@ Succeeded=0
 clientToken=random.randint(1000, 9999)
 import json
 x=0
-root=Tk()
+try:
+    root=Tk()
+except _tkinter.TclError as e:
+    print e
+    logging.critical("An exception has occured and Tkinter cannot be initiated.")
+    sys.exit(0)
 root.title("Minecraft Launcher (v%s)" % (version))
 try:
     root.iconbitmap("custom_icon.ico")
