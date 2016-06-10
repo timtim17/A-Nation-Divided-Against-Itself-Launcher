@@ -8,6 +8,9 @@ The customizable Minecraft launcher made in Python.
 • Supports downloading individual files/missing files  
 • Written in Python, and can be compiled into an executable using PyInstaller  
 
+##Contribute   
+• Join our Discord chat! https://discord.gg/01424P0w137GjaimS   
+
 ##Credits
 Coded by Unknown025  
 Code borrowed from MaddGames
