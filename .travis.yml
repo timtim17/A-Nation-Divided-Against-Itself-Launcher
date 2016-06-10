@@ -1,5 +1,7 @@
 language: python
-install: "pip install requests"
+install: 
+  - "pip install requests"
+  - "pip install mcstatus"
 python:
   - "2.7"
   #- "3.2"
