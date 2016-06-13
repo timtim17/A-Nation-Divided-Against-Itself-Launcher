@@ -1,4 +1,5 @@
 language: python
+# command to install dependencies
 install: 
   - "pip install requests"
   - "pip install mcstatus"
@@ -11,6 +12,5 @@ python:
   # does not have headers provided, please ask https://launchpad.net/~pypy/+archive/ppa
   # maintainers to fix their pypy-dev package.
   # - "pypy"
-# command to install dependencies
 # command to run tests
 script: python ANDAI.py
