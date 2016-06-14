@@ -12,5 +12,6 @@ The customizable Minecraft launcher made in Python.
 • Join our Discord chat! https://discord.gg/01424P0w137GjaimS   
 
 ##Credits
-Coded by Unknown025  
+Coded by Unknown025   
+Also coded by Austin Jenchi   
 Code borrowed from MaddGames
