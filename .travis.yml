@@ -1,4 +1,5 @@
 language: python
+# command to install dependencies
 install: 
   - "pip install requests"
   - "pip install mcstatus"
@@ -10,10 +11,6 @@ python:
   # Python 3 is not currently supported.
   # does not have headers provided, please ask https://launchpad.net/~pypy/+archive/ppa
   # maintainers to fix their pypy-dev package.
-  - "pypy"
-env:
-  - CI=true
-  - TRAVIS=true
-# command to install dependencies
+  # - "pypy"
 # command to run tests
 script: python ANDAI.py
