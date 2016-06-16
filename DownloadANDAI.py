@@ -93,7 +93,7 @@ class Profile:
                                     zipfile.extract(name, "mcdata/natives")
                             zipfile.close()
                         except BadZipfile as e:
-                            logging.exception("Zip/Jar file could not be extracted: %s. Error goes as follows: %s" % name, e)
+                            logging.exception("Zip/Jar file could not be extracted: %s. Error goes as follows: %s" % (name, e))
                             print "[%s WARN]: A faulty zip or jar file was found. This may cause problems!" % (time.strftime("%H:%M:%S"))
                             try:
                                 os.remove(libpath)
