@@ -142,7 +142,7 @@ class Profile:
             except IOError as e:
                 print "[%s ERR]: File '%s' could not be downloaded." % (time.strftime("%H:%M:%S"), filename)
                 FailedFiles += 1
-                logging.error("File '%s' was not downloaded. The error goes as follows: %s" % filename,e)
+                logging.error("File '%s' was not downloaded. The error goes as follows: %s" % (filename,e))
                 sys.exit(1)
             except WindowsError as e:
                 time.sleep(10)
