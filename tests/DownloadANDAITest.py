@@ -15,7 +15,7 @@ class DownloadANDAITest(unittest.TestCase):
         if profile is None:
             profile = Profile("1.7.10")
 
-    def testDownloadFile(self):
+    def test_download_file(self):
         global profile
         source_file = open("source.txt", "w+")
         source_file.write(test_string)
