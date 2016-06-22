@@ -9,7 +9,7 @@ The customizable Minecraft launcher made in Python.
 - Written in Python, and can be compiled into an executable using PyInstaller
 
 ## Contribute
-- Join our Discord chat! https://discord.gg/01424P0w137GjaimS
+Join our Discord chat! https://discord.gg/01424P0w137GjaimS
 
 ## Credits
 Coded by [Unknown025](https://www.github.com/Unknown025)
