@@ -1,9 +1,8 @@
 language: python
-# command to install dependencies
 install: 
   - pip install requests mcstatus pylint
 python:
   - 2.7
-# command to run tests
 script:
   - python -m compileall .  # compile all python files to check for errors
+  - pylint --errors-only
