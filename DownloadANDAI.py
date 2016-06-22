@@ -9,7 +9,7 @@ import sys
 import subprocess
 LOG_FILENAME="launcher.log"
 FORMAT = '[%(asctime)s %(levelname)s]: %(message)s'
-logging.basicConfig(filename=LOG_FILENAME,format=FORMAT, level=0)
+logging.basicConfig(filename=os.path.dirname(os.path.realpath(__file__)) + "\\" + LOG_FILENAME,format=FORMAT, level=0)
 DownloadedFiles = 0
 FailedFiles = 0
 def makeDir(dirname):
@@ -19,6 +19,9 @@ def makeDir(dirname):
         # Windows
         #os.system("MD " + dirname.replace("/", "\\") + " 2>NUL")
         subprocess.call("MD " + dirname.replace("/", "\\") + " 2>NUL", shell=True)
+
+    # if not os.path.isdir(dirname):
+    #     os.makedirs(dirname)
 currentOS = None
 if sys.platform.startswith("win"):
     currentOS = "windows"
@@ -52,12 +55,14 @@ class Profile:
             f = open("mcdata/versions/%s/%s.json" % (self.version, self.version), "rb")
             logging.info("Downloaded version info.")
         except IOError:
+            print "mcdata/versions/%s" % self.version
             makeDir("mcdata/versions/%s" % self.version)
-            self.cdownload1=threading.Thread(target=self.downloadFile, args=("mcdata/versions/%s/%s.json" % (self.version, self.version),
-                    "http://s3.amazonaws.com/Minecraft.Download/versions/%s/%s.json" % (self.version, self.version))
-            )
-            self.cdownload1.start()
-            self.cdownload1.join()
+            # self.cdownload1=threading.Thread(target=self.downloadFile, args=("mcdata/versions/%s/%s.json" % (self.version, self.version),
+            #         "http://s3.amazonaws.com/Minecraft.Download/versions/%s/%s.json" % (self.version, self.version))
+            # )
+            # self.cdownload1.start()
+            # self.cdownload1.join()
+            self.downloadFile("mcdata/versions/%s/%s.json" % (self.version, self.version), "http://s3.amazonaws.com/Minecraft.Download/versions/%s/%s.json" % (self.version, self.version))
             f = open("mcdata/versions/%s/%s.json" % (self.version, self.version), "rb")
         sdata = f.read()
         f.close()
@@ -126,8 +131,10 @@ class Profile:
         global FailedFiles
         global DownloadedFiles
         dirname = filename.rsplit("/", 1)[0]
+        print dirname
         makeDir(dirname)
         filename2=filename+".tmp"
+        print filename, url
         if not os.path.isfile(filename):
             try:
                 print "[%s INFO]: Downloading: %s, currently only %s failed." % (
@@ -142,7 +149,7 @@ class Profile:
             except IOError as e:
                 print "[%s ERR]: File '%s' could not be downloaded." % (time.strftime("%H:%M:%S"), filename)
                 FailedFiles += 1
-                logging.error("File '%s' was not downloaded. The error goes as follows: %s" % (filename,e))
+                logging.error("File '%s' was not downloaded. The error goes as follows: %s" % (filename, e))
                 sys.exit(1)
             except WindowsError as e:
                 time.sleep(10)

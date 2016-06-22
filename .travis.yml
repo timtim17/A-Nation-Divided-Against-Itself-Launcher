@@ -1,16 +1,9 @@
 language: python
 # command to install dependencies
 install: 
-  - "pip install requests"
-  - "pip install mcstatus"
+  - pip install requests mcstatus pylint
 python:
-  - "2.7"
-  #- "3.2"
-  #- "3.3"
-  #- "3.4"
-  # Python 3 is not currently supported.
-  # does not have headers provided, please ask https://launchpad.net/~pypy/+archive/ppa
-  # maintainers to fix their pypy-dev package.
-  # - "pypy"
+  - 2.7
 # command to run tests
-script: python ANDAI.py
+script:
+  - python -m compileall .  # compile all python files to check for errors
