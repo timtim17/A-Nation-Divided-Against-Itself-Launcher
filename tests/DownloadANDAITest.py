@@ -1,6 +1,6 @@
 import unittest
 
-from DownloadANDAI import Profile
+from ANDAI.DownloadANDAI import Profile
 
 test_string = "Test"
 profile = None
@@ -12,7 +12,8 @@ class DownloadANDAITest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         global profile
-        profile = Profile("1.7.10")
+        if profile is None:
+            profile = Profile("1.7.10")
 
     def testDownloadFile(self):
         global profile
@@ -24,3 +25,6 @@ class DownloadANDAITest(unittest.TestCase):
         output = downloaded_file.readline().strip()
         downloaded_file.close()
         self.assertEqual(test_string, output)
+
+if __name__ == "__main__":
+    unittest.main()

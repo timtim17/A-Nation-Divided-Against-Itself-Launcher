@@ -1,21 +1,20 @@
 build = "6.13.2016"
 version = "1.0.2"
 print "Starting Minecraft Launcher v%s Alpha, build %s" % (version, build)
-from Tkinter import *
-import ttk
-import tkMessageBox
-import urllib, urllib2
-import time
-import subprocess
-import shutil
-import os
-import sys
-import random
-import logging
-import threading
 import getpass
-import zipfile
+import logging
+import os
+import random
+import shutil
 import socket
+import subprocess
+import sys
+import time
+import tkMessageBox
+import ttk
+import urllib
+import urllib2
+from Tkinter import *
 
 try:
     import DownloadANDAI
@@ -30,7 +29,6 @@ except ImportError as e:
     print "[%s ERR]: The module 'requests' could not be imported. The process cannot continue." % (
     time.strftime("%H:%M:%S"))
     sys.exit(1)
-from zipfile import ZipFile, BadZipfile
 
 try:
     computer_name = os.environ['COMPUTERNAME']
