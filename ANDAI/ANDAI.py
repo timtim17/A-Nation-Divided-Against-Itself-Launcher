@@ -20,7 +20,6 @@ try:
     import DownloadANDAI
 except:
     print "[%s ERR]: The module 'DownloadANDAI' could not be imported. Downloading..." % time.strftime("%H:%M:%S")
-    os.mkdir("%s-%d" % "test", 5)
     urllib.urlretrieve("https://raw.githubusercontent.com/Unknown025/A-Nation-Divided-Against-Itself-Launcher/master/DownloadANDAI.py", "DownloadANDAI.py")
     import DownloadANDAI
 try:
