@@ -5,5 +5,7 @@ python:
   - 2.7
 script:
   - python -m compileall -q .  # compile all python files to check for errors
-  - pylint --errors-only
+  - pylint --errors-only ANDAI/ANDAI.py
+  - pylint --errors-only ANDAI/DownloadANDAITest.py
   - python -m unittest -v tests.DownloadANDAITest
+after_failure: tree
