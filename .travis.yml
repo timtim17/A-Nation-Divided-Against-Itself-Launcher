@@ -4,6 +4,6 @@ install:
 python:
   - 2.7
 script:
-  - python -m compileall .  # compile all python files to check for errors
+  - python -m compileall -q .  # compile all python files to check for errors
   - pylint --errors-only
   - python -m unittest -v tests.DownloadANDAITest
