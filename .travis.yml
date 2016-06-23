@@ -6,7 +6,7 @@ python:
 script:
   - python -m compileall -q .  # compile all python files to check for errors
   - pylint --errors-only ANDAI/ANDAI.py
-  - pylint --errors-only ANDAI/DownloadANDAITest.py
+  - pylint --errors-only ANDAI/DownloadANDAI.py
   - python -m unittest -v tests.DownloadANDAITest
 after_failure:
   - sudo apt-get install tree

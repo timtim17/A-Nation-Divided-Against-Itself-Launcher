@@ -44,7 +44,7 @@ if not os.path.exists(".minecraft"):
     try:
         os.mkdir(".minecraft")
         logging.info("Created .minecraft")
-    except WindowsError as e:
+    except OSError as e:
         print "[%s INFO]: .minecraft already exists." % (time.strftime("%H:%M:%S"))
 else:
     print "[%s INFO]: Found the .minecraft folder." % (time.strftime("%H:%M:%S"))
