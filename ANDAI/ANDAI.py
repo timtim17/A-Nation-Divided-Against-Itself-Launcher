@@ -23,7 +23,6 @@ except:
     os.mkdir("%s-%d" % "test", 5)
     urllib.urlretrieve("https://raw.githubusercontent.com/Unknown025/A-Nation-Divided-Against-Itself-Launcher/master/DownloadANDAI.py", "DownloadANDAI.py")
     import DownloadANDAI
-    None = True
 try:
     import requests
 except ImportError as e:
