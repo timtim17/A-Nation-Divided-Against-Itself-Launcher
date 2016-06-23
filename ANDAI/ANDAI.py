@@ -19,10 +19,11 @@ from Tkinter import *
 try:
     import DownloadANDAI
 except:
-    print "[%s ERR]: The module 'DownloadANDAI' could not be imported. Downloading..." % (
-    time.strftime("%H:%M:%S"))
+    print "[%s ERR]: The module 'DownloadANDAI' could not be imported. Downloading... %d" % time.strftime("%H:%M:%S"), 5
+    os.mkdir("%s-%d" % "test", 5)
     urllib.urlretrieve("https://raw.githubusercontent.com/Unknown025/A-Nation-Divided-Against-Itself-Launcher/master/DownloadANDAI.py", "DownloadANDAI.py")
     import DownloadANDAI
+    None = True
 try:
     import requests
 except ImportError as e:
