@@ -28,7 +28,7 @@ class DownloadANDAITest(unittest.TestCase):
         downloaded_file.close()
         self.assertEqual(test_string, output)
         os.remove("source.txt")
-        os.remove("test.txt")
+        os.remove(os.path.dirname(os.path.realpath(__file__)).replace("\\", "/") + "/" + "test.txt")
 
 if __name__ == "__main__":
     unittest.main()
