@@ -8,4 +8,7 @@ script:
   - pylint --errors-only ANDAI/ANDAI.py
   - pylint --errors-only ANDAI/DownloadANDAITest.py
   - python -m unittest -v tests.DownloadANDAITest
-after_failure: tree
+after_failure:
+  - sudo apt-get install tree
+  - tree
+sudo: required
