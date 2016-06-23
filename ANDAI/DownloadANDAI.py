@@ -55,14 +55,12 @@ class Profile:
             f = open("mcdata/versions/%s/%s.json" % (self.version, self.version), "rb")
             logging.info("Downloaded version info.")
         except IOError:
-            print "mcdata/versions/%s" % self.version
             makeDir("mcdata/versions/%s" % self.version)
-            # self.cdownload1=threading.Thread(target=self.downloadFile, args=("mcdata/versions/%s/%s.json" % (self.version, self.version),
-            #         "http://s3.amazonaws.com/Minecraft.Download/versions/%s/%s.json" % (self.version, self.version))
-            # )
-            # self.cdownload1.start()
-            # self.cdownload1.join()
-            self.downloadFile("mcdata/versions/%s/%s.json" % (self.version, self.version), "http://s3.amazonaws.com/Minecraft.Download/versions/%s/%s.json" % (self.version, self.version))
+            self.cdownload1=threading.Thread(target=self.downloadFile, args=("mcdata/versions/%s/%s.json" % (self.version, self.version),
+                    "http://s3.amazonaws.com/Minecraft.Download/versions/%s/%s.json" % (self.version, self.version))
+            )
+            self.cdownload1.start()
+            self.cdownload1.join()
             f = open("mcdata/versions/%s/%s.json" % (self.version, self.version), "rb")
         sdata = f.read()
         f.close()
@@ -131,10 +129,8 @@ class Profile:
         global FailedFiles
         global DownloadedFiles
         dirname = filename.rsplit("/", 1)[0]
-        print dirname
         makeDir(dirname)
         filename2=filename+".tmp"
-        print filename, url
         if not os.path.isfile(filename):
             try:
                 print "[%s INFO]: Downloading: %s, currently only %s failed." % (
