@@ -23,7 +23,7 @@ class DownloadANDAITest(unittest.TestCase):
         thread.start()
         thread.join()
         # profile.downloadFile(os.path.dirname(os.path.realpath(__file__)).replace("\\", "/") + "/" + "test.txt", "source.txt")
-        downloaded_file = open("test.txt")
+        downloaded_file = open(os.path.dirname(os.path.realpath(__file__)).replace("\\", "/") + "/" + "test.txt")
         output = downloaded_file.readline().strip()
         downloaded_file.close()
         self.assertEqual(test_string, output)

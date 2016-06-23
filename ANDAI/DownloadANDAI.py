@@ -147,7 +147,7 @@ class Profile:
                 FailedFiles += 1
                 logging.error("File '%s' was not downloaded. The error goes as follows: %s" % (filename, e))
                 sys.exit(1)
-            except WindowsError as e:
+            except OSError as e:
                 time.sleep(10)
                 os.rename(filename2, filename)
 
